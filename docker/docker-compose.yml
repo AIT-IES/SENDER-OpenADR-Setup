@@ -1,0 +1,80 @@
+version: '3.9'
+
+volumes:
+
+  prometheus-data:
+    driver: local
+
+  grafana-data:
+    driver: local
+
+services:
+
+  # Reverse proxy
+  traefik:
+    image: traefik:v2.9
+    container_name: ${PROJECT}-reverse-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 8080:8080
+    command:
+      # - "--log.level=DEBUG"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:8080"
+
+  # VTN server fpr HPT
+  vtn-hpt:
+    build:
+      context: vtn-hpt
+    image: vtn-hpt
+    container_name: ${PROJECT}-vtn-hpt
+    hostname: vtn-hpt
+    ports:
+      - 5000:5000 # for aiomonitor
+      - 8000:8000 # for prometheus client
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vtn.rule=Host(`${HOST}`) && PathPrefix(`/Test-HPT-AIT`)"
+      - "traefik.http.routers.vtn.entrypoints=web"
+      - "traefik.http.services.vtn.loadbalancer.server.port=8080"
+      - "traefik.http.routers.vtn.middlewares=replaceprefix"
+      - "traefik.http.middlewares.replaceprefix.replacepathregex.regex=^/Test-HPT-AIT/(.*)"
+      - "traefik.http.middlewares.replaceprefix.replacepathregex.replacement=/$$1"
+
+  # Time series database
+  prometheus:
+    image: prom/prometheus
+    container_name: ${PROJECT}-prometheus
+    hostname: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus-data:/prometheus
+      - ./prometheus:/etc/prometheus
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/prometheus/config/prometheus.yml"
+
+  # Dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: ${PROJECT}-grafana
+    hostname: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/data-sources:/etc/grafana/provisioning/datasources
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+    restart: unless-stopped
+
+  # Simple service for checking the connection.
+  whoami:
+    image: "traefik/whoami"
+    container_name: ${PROJECT}-whoami
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`${HOST}`)"
+      - "traefik.http.routers.whoami.entrypoints=web"

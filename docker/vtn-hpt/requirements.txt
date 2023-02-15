@@ -1,0 +1,4 @@
+aiomonitor
+prometheus_client
+git+https://github.com/AIT-IES/openleadr-drpg-messages-python#egg=openleadr_drpg_messages
+git+https://github.com/AIT-IES/openleadr-push-mode-python#egg=openleadr_push_mode
