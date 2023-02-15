@@ -28,10 +28,11 @@ VTN_HOST = socket.gethostbyname(socket.gethostname())
 
 VEN_NAME_001 = 'HOUSE_001'
 VEN_NAME_002 = 'HOUSE_002'
-# VEN_URL = 'https://services.energylabs-ht.eu/sender/services/EiEvent.'
-VEN_URL = 'http://10.101.13.36:8081/OpenADR2/Simple/2.0b'
+# VEN_URL = 'https://services.energylabs-ht.eu/sender/services'
+VEN_URL = 'http://10.28.60.52:8081/OpenADR2/Simple/2.0b'
 # VEN_URL = 'http://10.0.0.219:8081/OpenADR2/Simple/2.0b'
 # VEN_URL = 'http://localhost:8081/OpenADR2/Simple/2.0b'
+LOGGER.info(f'VEN URL: {VEN_URL}')
 
 VEN_REGISTRATION_LIST = {
     VEN_NAME_001: 'REGISTRATION_ID_001',
@@ -148,7 +149,7 @@ async def push_event(s, ven_id, event_task_id, period, delay = 2):
             current_value=round(random.uniform(0., 10.), 2),
             callback=event_response_callback
             )
-    
+
         if id != None:
             LOGGER.info(f'Successfully pushed event with ID={id}')
             PROMETHEUS_GAUGES_EVENTS[ven_id].set(event_value)
@@ -176,11 +177,11 @@ async def start_server(loop):
 
     event_task_id = generate_id()
     PERIODIC_EVENT_TASKS[event_task_id] = \
-        loop.create_task(push_event(simple_server, VEN_NAME_001, event_task_id, 2))
+        loop.create_task(push_event(simple_server, VEN_NAME_001, event_task_id, 5))
 
     # event_task_id = generate_id()
     # PERIODIC_EVENT_TASKS[event_task_id] = \
-    #     loop.create_task(push_event(simple_server, VEN_NAME_002, event_task_id, 2))
+    #     loop.create_task(push_event(simple_server, VEN_NAME_002, event_task_id, 5))
 
     return simple_server
 

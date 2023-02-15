@@ -15,14 +15,17 @@ enable_default_logging(level=logging.INFO)
 
 openleadr_drpg_messages.enable()
 
+def get_host_address():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return (s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close())[1]
+
 TEST_VTN_ID = 'VTN_AIT'
-# TEST_VTN_URL = 'http://vlab-central.ait.ac.at:8080/Test-HPT-AIT/OpenADR2/Simple/2.0b'
-TEST_VTN_URL = 'http://localhost:8080/Test-HPT-AIT/OpenADR2/Simple/2.0b'
+TEST_VTN_URL = 'http://vlab-central.ait.ac.at:8080/Test-HPT-AIT/OpenADR2/Simple/2.0b'
+# TEST_VTN_URL = 'http://localhost:8080/Test-HPT-AIT/OpenADR2/Simple/2.0b'
 # TEST_VTN_URL = 'http://localhost:8080/OpenADR2/Simple/2.0b'
 
 TEST_VEN_NAME = 'HOUSE_001'
-TEST_VEN_HOST = socket.gethostbyname(socket.gethostname())
-# TEST_VEN_HOST = '10.0.0.219'
+TEST_VEN_HOST = get_host_address()
 # TEST_VEN_HOST = 'localhost'
 
 VEN_MEASUREMENT_TYPE = 'REAL_POWER'
