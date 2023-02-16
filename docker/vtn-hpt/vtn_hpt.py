@@ -28,8 +28,8 @@ VTN_HOST = socket.gethostbyname(socket.gethostname())
 
 VEN_NAME_001 = 'HOUSE_001'
 VEN_NAME_002 = 'HOUSE_002'
-# VEN_URL = 'https://services.energylabs-ht.eu/sender/services'
-VEN_URL = 'http://10.28.60.52:8081/OpenADR2/Simple/2.0b'
+VEN_URL = 'https://services.energylabs-ht.eu/sender/services'
+# VEN_URL = 'http://10.28.60.52:8081/OpenADR2/Simple/2.0b'
 # VEN_URL = 'http://10.0.0.219:8081/OpenADR2/Simple/2.0b'
 # VEN_URL = 'http://localhost:8081/OpenADR2/Simple/2.0b'
 LOGGER.info(f'VEN URL: {VEN_URL}')
@@ -158,7 +158,10 @@ async def push_event(s, ven_id, event_task_id, period, delay = 2):
             event_task = PERIODIC_EVENT_TASKS.pop(event_task_id)
             event_task.cancel()
 
-        await asyncio.sleep(period)
+        if period:
+            await asyncio.sleep(period)
+        else:
+            break
 
 async def start_server(loop):
     # Create the server object
@@ -199,12 +202,18 @@ class VTNMonitor(aiomonitor.Monitor):
         aiomonitor_logger.setLevel(level=logging.DEBUG)
         aiomonitor_logger.addHandler(handler)
 
-    @aiomonitor.utils.alt_names('pe')
-    def do_push_event(self, period, ven_id=VEN_NAME_001):
-        '''Push events to a VEN with a given delay and period.'''
+    @aiomonitor.utils.alt_names('ppe')
+    def do_push_periodic_event(self, period, ven_id=VEN_NAME_001):
+        '''Push periodic events to a VEN.'''
         event_task_id = ven_id + '_' + generate_id()
         PERIODIC_EVENT_TASKS[event_task_id] = \
             self._loop.create_task(push_event(self.server, ven_id, event_task_id, int(period)))
+
+    @aiomonitor.utils.alt_names('pse')
+    def do_push_single_event(self, ven_id=VEN_NAME_001):
+        '''Push single event to a VEN.'''
+        event_task_id = ven_id + '_' + generate_id()
+        self._loop.create_task(push_event(self.server, ven_id, event_task_id, None))
 
 
 # Run the server and the monitor in the asyncio event loop.
