@@ -147,6 +147,7 @@ async def push_event(s, ven_id, event_task_id, period, delay = 2):
                         'signal_payload': event_value}],
             market_context='oadr://my_market',
             current_value=round(random.uniform(0., 10.), 2),
+            response_required='never',
             callback=event_response_callback
             )
 
