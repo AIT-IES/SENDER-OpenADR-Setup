@@ -153,10 +153,12 @@ async def push_event(s, ven_id, event_task_id, period, delay = 2):
         if id != None:
             LOGGER.info(f'Successfully pushed event with ID={id}')
             PROMETHEUS_GAUGES_EVENTS[ven_id].set(event_value)
-        else:
+        elif event_task_id:
             LOGGER.error('Failed to push event, cancelling periodic event task ...')
             event_task = PERIODIC_EVENT_TASKS.pop(event_task_id)
             event_task.cancel()
+        else:
+            LOGGER.error('Failed to push event ...')
 
         if period:
             await asyncio.sleep(period)
@@ -178,9 +180,9 @@ async def start_server(loop):
     # Create task for VEN pre-registration
     loop.create_task(preregister_ven(simple_server))
 
-    event_task_id = generate_id()
-    PERIODIC_EVENT_TASKS[event_task_id] = \
-        loop.create_task(push_event(simple_server, VEN_NAME_001, event_task_id, 5))
+    # event_task_id = generate_id()
+    # PERIODIC_EVENT_TASKS[event_task_id] = \
+    #     loop.create_task(push_event(simple_server, VEN_NAME_001, event_task_id, 5))
 
     # event_task_id = generate_id()
     # PERIODIC_EVENT_TASKS[event_task_id] = \
@@ -189,6 +191,8 @@ async def start_server(loop):
     return simple_server
 
 class VTNMonitor(aiomonitor.Monitor):
+
+    HEART_BEAT_PERIOD = 5
 
     def __init__(self, server, **args):
         super().__init__(**args)
@@ -202,6 +206,10 @@ class VTNMonitor(aiomonitor.Monitor):
         aiomonitor_logger.setLevel(level=logging.DEBUG)
         aiomonitor_logger.addHandler(handler)
 
+        # This keeps the event loop running, even if the server is 
+        # idle (no incoming reports or periodic push events).
+        self._loop.create_task(self._heart_beat())
+
     @aiomonitor.utils.alt_names('ppe')
     def do_push_periodic_event(self, period, ven_id=VEN_NAME_001):
         '''Push periodic events to a VEN.'''
@@ -212,9 +220,11 @@ class VTNMonitor(aiomonitor.Monitor):
     @aiomonitor.utils.alt_names('pse')
     def do_push_single_event(self, ven_id=VEN_NAME_001):
         '''Push single event to a VEN.'''
-        event_task_id = ven_id + '_' + generate_id()
-        self._loop.create_task(push_event(self.server, ven_id, event_task_id, None))
+        self._loop.create_task(push_event(self.server, ven_id, None, None))
 
+    async def _heart_beat(self):
+        while True:
+            await asyncio.sleep(VTNMonitor.HEART_BEAT_PERIOD)
 
 # Run the server and the monitor in the asyncio event loop.
 try:
