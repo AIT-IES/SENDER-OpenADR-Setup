@@ -24,7 +24,7 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:8080"
 
-  # VTN server fpr HPT
+  # VTN server for HPT
   vtn-hpt:
     build:
       context: vtn-hpt
@@ -42,6 +42,31 @@ services:
       - "traefik.http.routers.vtn.middlewares=replaceprefix"
       - "traefik.http.middlewares.replaceprefix.replacepathregex.regex=^/Test-HPT-AIT/(.*)"
       - "traefik.http.middlewares.replaceprefix.replacepathregex.replacement=/$$1"
+    # profiles:
+    #   - all
+    #   - hpt
+
+  # VTN server fo TRIALOG
+  vtn-trialog:
+    build:
+      context: vtn-trialog
+    image: vtn-trialog
+    container_name: ${PROJECT}-vtn-trialog
+    hostname: vtn-trialog
+    ports:
+      - 5001:5001 # for aiomonitor
+      - 8001:8001 # for prometheus client
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vtn.rule=Host(`${HOST}`) && PathPrefix(`/Test-TRIALOG-AIT`)"
+      - "traefik.http.routers.vtn.entrypoints=web"
+      - "traefik.http.services.vtn.loadbalancer.server.port=8080"
+      - "traefik.http.routers.vtn.middlewares=replaceprefix"
+      - "traefik.http.middlewares.replaceprefix.replacepathregex.regex=^/Test-TRIALOG-AIT/(.*)"
+      - "traefik.http.middlewares.replaceprefix.replacepathregex.replacement=/$$1"
+    # profiles:
+    #   - all
+    #   - trialog
 
   # Time series database
   prometheus:

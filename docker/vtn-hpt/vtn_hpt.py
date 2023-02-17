@@ -28,9 +28,9 @@ VTN_HOST = socket.gethostbyname(socket.gethostname())
 
 VEN_NAME_001 = 'HOUSE_001'
 VEN_NAME_002 = 'HOUSE_002'
-VEN_URL = 'https://services.energylabs-ht.eu/sender/services'
+# VEN_URL = 'https://services.energylabs-ht.eu/sender/services'
 # VEN_URL = 'http://10.28.60.52:8081/OpenADR2/Simple/2.0b'
-# VEN_URL = 'http://10.0.0.219:8081/OpenADR2/Simple/2.0b'
+VEN_URL = 'http://10.101.13.36:8081/OpenADR2/Simple/2.0b'
 # VEN_URL = 'http://localhost:8081/OpenADR2/Simple/2.0b'
 LOGGER.info(f'VEN URL: {VEN_URL}')
 

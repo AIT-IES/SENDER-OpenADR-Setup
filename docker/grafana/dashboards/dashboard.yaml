@@ -5,3 +5,6 @@ providers:
     folder: 'HPT-AIT Test: VTN Dashboard'
     options:
       path: /etc/grafana/provisioning/dashboards/hpt
+    folder: 'TRIALOG-AIT Test: VTN Dashboard'
+    options:
+      path: /etc/grafana/provisioning/dashboards/trialog
