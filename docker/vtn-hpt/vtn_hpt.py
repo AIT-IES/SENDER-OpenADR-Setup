@@ -25,6 +25,7 @@ LOGGER = logging.getLogger('openleadr')
 VTN_ID = 'VTN_AIT'
 VTN_HOST = socket.gethostbyname(socket.gethostname())
 # VTN_HOST = 'localhost'
+VTN_PORT = 8081
 
 VEN_NAME_001 = 'HOUSE_001'
 VEN_NAME_002 = 'HOUSE_002'
@@ -168,7 +169,7 @@ async def push_event(s, ven_id, event_task_id, period, delay = 2):
 
 async def start_server(loop):
     # Create the server object
-    simple_server = OpenADRServerPushMode(vtn_id=VTN_ID, http_host=VTN_HOST, auto_register_report=False)
+    simple_server = OpenADRServerPushMode(vtn_id=VTN_ID, http_host=VTN_HOST, http_port=VTN_PORT, auto_register_report=False)
 
     # Add the handler for client (VEN) pre-registration
     simple_server.add_handler('on_create_party_registration', on_party_preregistration)

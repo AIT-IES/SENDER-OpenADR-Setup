@@ -20,13 +20,13 @@ def get_host_address():
     return (s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close())[1]
 
 TEST_VTN_ID = 'VTN_AIT'
-# TEST_VTN_URL = 'http://vlab-central.ait.ac.at:8080/Test-HPT-AIT/OpenADR2/Simple/2.0b'
+TEST_VTN_URL = 'http://vlab-central.ait.ac.at:8080/Test-HPT-AIT/OpenADR2/Simple/2.0b'
 # TEST_VTN_URL = 'http://localhost:8080/Test-HPT-AIT/OpenADR2/Simple/2.0b'
-TEST_VTN_URL = 'http://localhost:8080/OpenADR2/Simple/2.0b'
+# TEST_VTN_URL = 'http://localhost:8080/OpenADR2/Simple/2.0b'
 
 TEST_VEN_NAME = 'HOUSE_001'
-# TEST_VEN_HOST = get_host_address()
-TEST_VEN_HOST = 'localhost'
+TEST_VEN_HOST = get_host_address()
+# TEST_VEN_HOST = 'localhost'
 
 VEN_MEASUREMENT_TYPE = 'REAL_POWER'
 VEN_MEASUREMENT_SCALE = SI_SCALE_CODE['k']

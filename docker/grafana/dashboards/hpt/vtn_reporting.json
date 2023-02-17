@@ -24,7 +24,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 3,
+  "id": 7,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -61,7 +61,7 @@
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "auto",
+            "showPoints": "always",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -115,7 +115,7 @@
           },
           "editorMode": "builder",
           "exemplar": true,
-          "expr": "VTN_HPT:REPORT:HOUSE_001:REAL_POWER",
+          "expr": "VTN_HPT:EVENT:HOUSE_001:LOAD_DISPATCH",
           "legendFormat": "{{__name__}}",
           "range": true,
           "refId": "A"
@@ -155,7 +155,7 @@
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "auto",
+            "showPoints": "always",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -227,13 +227,13 @@
     "list": []
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "VTN Reporting",
-  "uid": "qS-ysd14k",
+  "uid": "EU2Oqb1Vz",
   "version": 1,
   "weekStart": ""
 }

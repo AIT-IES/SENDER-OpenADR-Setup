@@ -22,6 +22,7 @@ LOGGER = logging.getLogger('openleadr')
 VTN_ID = 'VTN_AIT'
 VTN_HOST = socket.gethostbyname(socket.gethostname())
 # VTN_HOST = 'localhost'
+VTN_PORT = 8082
 
 # REQUESTED_POLL_FREQ = None
 REQUESTED_POLL_FREQ = timedelta(seconds=3)
@@ -144,7 +145,7 @@ async def add_event(s, ven_id, event_task_id, period, value=None, delay=1):
 
 async def start_server(loop):
     # Create the server object
-    simple_server = OpenADRServer(vtn_id=VTN_ID, http_host=VTN_HOST, requested_poll_freq=REQUESTED_POLL_FREQ)
+    simple_server = OpenADRServer(vtn_id=VTN_ID, http_host=VTN_HOST, http_port=VTN_PORT, requested_poll_freq=REQUESTED_POLL_FREQ)
 
     # Add the handler for client (VEN) pre-registration
     simple_server.add_handler('on_create_party_registration', on_create_party_registration)
@@ -154,9 +155,9 @@ async def start_server(loop):
 
     await simple_server.run()
 
-    # event_task_id = generate_id()
-    # PERIODIC_EVENT_TASKS[event_task_id] = \
-    #     loop.create_task(add_event(simple_server, 'VEN_ID_EVSE_HUB_TRIALOG', event_task_id, 3, 5))
+    event_task_id = generate_id()
+    PERIODIC_EVENT_TASKS[event_task_id] = \
+        loop.create_task(add_event(simple_server, 'VEN_ID_EVSE_HUB_TRIALOG', event_task_id, 3, 5))
 
     return simple_server
 
