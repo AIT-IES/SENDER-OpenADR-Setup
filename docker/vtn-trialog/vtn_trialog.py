@@ -86,7 +86,6 @@ async def on_create_party_registration(registration_info):
             registration_id=registration_id,
             fingerprint='',
             resource_ids = [],
-            reports = []
         )
 
         REDIS_API.set(REDIS_VEN_IDS_KEY, json.dumps(VEN_IDS))
@@ -117,9 +116,6 @@ async def on_register_report(ven_id, resource_id, measurement, unit, scale,
 
     if not resource_id in VEN_INFO[ven_id]['resource_ids']:
         VEN_INFO[ven_id]['resource_ids'].append(resource_id)
-        VEN_INFO[ven_id]['reports'].append(
-
-        )
         REDIS_API.set(REDIS_VEN_INFO_KEY, json.dumps(VEN_INFO))
 
     callback = partial(on_update_report, ven_id=ven_id, resource_id=resource_id, measurement=measurement, gauge=report_gauge)
