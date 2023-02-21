@@ -14,3 +14,6 @@ scrape_configs:
   - job_name: 'vtn-trialog'
     static_configs:
     - targets: ['vtn-trialog:8001'] 
+  - job_name: 'flex-trialog'
+    static_configs:
+    - targets: ['flex-trialog:8002'] 

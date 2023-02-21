@@ -1,3 +1,5 @@
 aiomonitor
-prometheus_client
 openleadr
+prometheus_api_client
+prometheus_client
+redis

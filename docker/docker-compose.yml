@@ -8,6 +8,9 @@ volumes:
   grafana-data:
     driver: local
 
+  redis-data:
+    driver: local
+
 services:
 
   # Reverse proxy
@@ -46,13 +49,14 @@ services:
     #   - all
     #   - hpt
 
-  # VTN server fo TRIALOG
+  # VTN server for TRIALOG
   vtn-trialog:
     build:
       context: vtn-trialog
     image: vtn-trialog
     container_name: ${PROJECT}-vtn-trialog
     hostname: vtn-trialog
+    depends_on: redis
     ports:
       - 5001:5001 # for aiomonitor
       - 8001:8001 # for prometheus client
@@ -64,6 +68,19 @@ services:
       - "traefik.http.routers.vtntrialog.middlewares=vtntrialogreplaceprefix"
       - "traefik.http.middlewares.vtntrialogreplaceprefix.replacepathregex.regex=^/Test-TRIALOG-AIT/(.*)"
       - "traefik.http.middlewares.vtntrialogreplaceprefix.replacepathregex.replacement=/$$1"
+    # profiles:
+    #   - all
+    #   - trialog
+
+  # Retrieve flex forecast from TRIALOG
+  flex-trialog:
+    build:
+      context: flex-trialog
+    image: flex-trialog
+    container_name: ${PROJECT}-flex-trialog
+    hostname: flex-trialog
+    ports:
+      - 8002:8002 # for prometheus client
     # profiles:
     #   - all
     #   - trialog
@@ -81,6 +98,8 @@ services:
     restart: unless-stopped
     command:
       - "--config.file=/etc/prometheus/config/prometheus.yml"
+    # profiles:
+    #   - all
 
   # Dashboard
   grafana:
@@ -94,6 +113,19 @@ services:
       - ./grafana/data-sources:/etc/grafana/provisioning/datasources
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
     restart: unless-stopped
+    # profiles:
+    #   - all
+
+  # Database
+  redis:
+    image: redis:6.2-alpine
+    container_name: ${PROJECT}-redis
+    hostname: redis
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1
+    volumes: 
+      - redis-data:/data
 
   # Simple service for checking the connection.
   whoami:
