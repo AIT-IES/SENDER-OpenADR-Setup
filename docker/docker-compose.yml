@@ -56,7 +56,7 @@ services:
     image: vtn-trialog
     container_name: ${PROJECT}-vtn-trialog
     hostname: vtn-trialog
-    depends_on: redis
+    depends_on: [redis]
     ports:
       - 5001:5001 # for aiomonitor
       - 8001:8001 # for prometheus client
