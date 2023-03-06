@@ -2,13 +2,13 @@ version: '3.9'
 
 volumes:
 
-  prometheus-data:
+  prometheus_data:
     driver: local
 
-  grafana-data:
+  grafana_data:
     driver: local
 
-  redis-data:
+  redis_data:
     driver: local
 
 services:
@@ -30,10 +30,12 @@ services:
   # VTN server for HPT
   vtn-hpt:
     build:
-      context: vtn-hpt
-    image: vtn-hpt
+      context: vtn_push
+    image: vtn-push
     container_name: ${PROJECT}-vtn-hpt
     hostname: vtn-hpt
+    volumes:
+      - ./vtn_common:/usr/app/vtn_common
     ports:
       - 5000:5000 # for aiomonitor
       - 8000:8000 # for prometheus client
@@ -45,20 +47,22 @@ services:
       - "traefik.http.routers.vtnhpt.middlewares=vtnhptreplaceprefix"
       - "traefik.http.middlewares.vtnhptreplaceprefix.replacepathregex.regex=^/Test-HPT-AIT/(.*)"
       - "traefik.http.middlewares.vtnhptreplaceprefix.replacepathregex.replacement=/$$1"
-    # profiles:
-    #   - all
-    #   - hpt
+    profiles:
+      - all
+      - hpt
 
   # VTN server for TRIALOG
   vtn-trialog:
     build:
-      context: vtn-trialog
-    image: vtn-trialog
+      context: vtn_poll
+    image: vtn-poll
     container_name: ${PROJECT}-vtn-trialog
     hostname: vtn-trialog
     depends_on: [redis]
+    volumes:
+      - ./vtn_common:/usr/app/vtn_common
     ports:
-      - 5001:5001 # for aiomonitor
+      - 5001:5001 # for VTN monitor
       - 8001:8001 # for prometheus client
     labels:
       - "traefik.enable=true"
@@ -68,9 +72,9 @@ services:
       - "traefik.http.routers.vtntrialog.middlewares=vtntrialogreplaceprefix"
       - "traefik.http.middlewares.vtntrialogreplaceprefix.replacepathregex.regex=^/Test-TRIALOG-AIT/(.*)"
       - "traefik.http.middlewares.vtntrialogreplaceprefix.replacepathregex.replacement=/$$1"
-    # profiles:
-    #   - all
-    #   - trialog
+    profiles:
+      - all
+      - trialog
 
   # Retrieve flex forecast from TRIALOG
   flex-trialog:
@@ -81,9 +85,9 @@ services:
     hostname: flex-trialog
     ports:
       - 8002:8002 # for prometheus client
-    # profiles:
-    #   - all
-    #   - trialog
+    profiles:
+      - all
+      - trialog
 
   # Time series database
   prometheus:
@@ -93,13 +97,11 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - prometheus-data:/prometheus
+      - prometheus_data:/prometheus
       - ./prometheus:/etc/prometheus
-    restart: unless-stopped
+    # restart: unless-stopped
     command:
       - "--config.file=/etc/prometheus/config/prometheus.yml"
-    # profiles:
-    #   - all
 
   # Dashboard
   grafana:
@@ -109,12 +111,10 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - grafana-data:/var/lib/grafana
+      - grafana_data:/var/lib/grafana
       - ./grafana/data-sources:/etc/grafana/provisioning/datasources
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
-    restart: unless-stopped
-    # profiles:
-    #   - all
+    # restart: unless-stopped
 
   # Database
   redis:
@@ -125,7 +125,10 @@ services:
       - '6379:6379'
     command: redis-server --save 20 1
     volumes: 
-      - redis-data:/data
+      - redis_data:/data
+    profiles:
+      - all
+      - trialog
 
   # Simple service for checking the connection.
   whoami:
@@ -135,3 +138,5 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.whoami.rule=Host(`${HOST}`)"
       - "traefik.http.routers.whoami.entrypoints=web"
+    profiles:
+      - debug

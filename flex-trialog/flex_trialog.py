@@ -1,5 +1,6 @@
 # Retrieve flex forecast for VENs
 from prometheus_client import start_http_server, Gauge
+import re
 import redis
 import json
 import random
@@ -27,6 +28,12 @@ REDIS_VEN_INFO_KEY = 'ven_info'
 
 VEN_INFO = {}
 
+def sanitize_prometheus_metric_name(str_name):
+    return ''.join(
+        [str_name[0] if re.match('[a-zA-Z_:]', str_name[0]) else '_' + str_name[0]] +
+        [c for c in str_name[1:] if re.match('[a-zA-Z0-9_:]', c)]
+        )
+
 def retrieve_ven_info():
     global VEN_INFO
     redis_ven_info = REDIS_API.get(REDIS_VEN_INFO_KEY)
@@ -48,6 +55,7 @@ def update_prometheus_client():
         for resource_id in ven_info['resource_ids']:
             if not resource_id in PROMETHEUS_GAUGES_FLEX[ven_id]:
                 flex_forecast_gauge_name = '{}:{}:{}'.format(PROMETHEUS_PREFIX_FLEX, ven_id, resource_id)
+                flex_forecast_gauge_name = sanitize_prometheus_metric_name(flex_forecast_gauge_name)
                 flex_forecast_gauge = Gauge(flex_forecast_gauge_name, 'flex forecast {}-{}'.format(ven_id, resource_id))
                 flex_forecast_gauge.set(0)
                 LOGGER.info(f'ADD NEW GAUGE FOR {flex_forecast_gauge_name}')

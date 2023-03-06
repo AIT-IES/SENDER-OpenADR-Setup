@@ -1,5 +1,8 @@
 import socket
 
+TERMINAL = None
+TERMINAL_PROMPT = 'monitor >>> '
+
 class Netcat:
     ''' 
     Python "netcat like" module.
@@ -27,9 +30,6 @@ class Netcat:
  
         return rval
  
-TERMINAL = None
-TERMINAL_PROMPT = 'monitor >>> '
-
 def _cmd(str_cmd):
     TERMINAL.write(bytes(str_cmd + '\n', 'utf-8'))
     ret = TERMINAL.read_until(TERMINAL_PROMPT)
@@ -44,23 +44,19 @@ def cancel(task_id):
 def where(task_id):
     _cmd(f'where {task_id}')
 
-def pse(ven_id=None):
-    push_single_event(ven_id)
+def ase(ven_id):
+    add_single_event(ven_id)
 
-def push_single_event(ven_id=None):
-    if ven_id:
-        _cmd(f'pse {ven_id}')
-    else:
-        _cmd('pse')
+def add_single_event(ven_id):
+    _cmd(f'ase {ven_id}')
 
-def ppe(period, ven_id=None):
-    push_periodic_event(period, ven_id)
+def ape(period, ven_id):
+    add_periodic_event(period, ven_id)
 
-def push_periodic_event(period, ven_id=None):
-    if ven_id:
-        _cmd(f'ppe {period} {ven_id}')
-    else:
-        _cmd(f'ppe {period}')
+def add_periodic_event(period, ven_id):
+    _cmd(f'ppe {period} {ven_id}')
 
-TERMINAL = Netcat('localhost', 5000)
-TERMINAL.read_until(TERMINAL_PROMPT)
+def start_terminal(port=5001):
+    global TERMINAL
+    TERMINAL = Netcat('localhost', port)
+    TERMINAL.read_until(TERMINAL_PROMPT)

@@ -16,11 +16,11 @@ def get_host_address():
     return (s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close())[1]
 
 TEST_VTN_ID = 'VTN_AIT'
-TEST_VTN_URL = 'http://vlab-central.ait.ac.at:8080/Test-TRIALOG-AIT/OpenADR2/Simple/2.0b'
-# TEST_VTN_URL = 'http://localhost:8080/Test-TRIALOG-AIT/OpenADR2/Simple/2.0b'
+# TEST_VTN_URL = 'http://vlab-central.ait.ac.at:8080/Test-TRIALOG-AIT/OpenADR2/Simple/2.0b'
+TEST_VTN_URL = 'http://localhost:8080/Test-TRIALOG-AIT/OpenADR2/Simple/2.0b'
 # TEST_VTN_URL = 'http://localhost:8080/OpenADR2/Simple/2.0b'
 
-TEST_VEN_NAME = 'EVSE_HUB_TRIALOG'
+TEST_VEN_NAME = 'Trialog_VEN'
 
 VEN_MEASUREMENT_TYPE = 'REAL_POWER'
 VEN_MEASUREMENT_SCALE = SI_SCALE_CODE['k']
@@ -56,14 +56,14 @@ simple_client = OpenADRClient(
 
 # Add the report capability to the client
 simple_client.add_report(callback=collect_report_evse_001,
-    resource_id = 'EVSE_001',
+    resource_id = 'poolId_{731a704d-901c-4443-a376-29f96ba36548}',
     measurement=VEN_MEASUREMENT_TYPE,
     scale=VEN_MEASUREMENT_SCALE,
     sampling_rate=VEN_MEASUREMENT_RATE,
     report_duration=timedelta(weeks=1))
 
 simple_client.add_report(callback=collect_report_evse_002,
-    resource_id = 'EVSE_002',
+    resource_id = 'poolId_{f263c86b-c75a-4ca5-8d71-5ded5f9188c0}',
     measurement=VEN_MEASUREMENT_TYPE,
     scale=VEN_MEASUREMENT_SCALE,
     sampling_rate=VEN_MEASUREMENT_RATE,
