@@ -43,8 +43,8 @@ Use the [Docker Compose CLI](https://docs.docker.com/compose/reference/) for dep
 
 By default, the VTN endpoints are:
 
-+ POLL MODE VTN / TRIALOG-AIT setup: `https://<HOST_NAME>:8080/Test-TRIALOG-AIT/OpenADR2/Simple/2.0b'`
-+ PUSH MODE VTN / HPT-AIT setup: `https://<HOST_NAME>:8080/Test-HPT-AIT/OpenADR2/Simple/2.0b'`
++ POLL MODE VTN / TRIALOG-AIT setup: `https://<HOST_NAME>:8080/Test-TRIALOG-AIT/OpenADR2/Simple/2.0b`
++ PUSH MODE VTN / HPT-AIT setup: `https://<HOST_NAME>:8080/Test-HPT-AIT/OpenADR2/Simple/2.0b`
 
 You can interact with both VTN servers from a Python command prompt:
 ```python
