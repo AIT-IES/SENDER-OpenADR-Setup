@@ -1,6 +1,7 @@
 import asyncio
 import aiomonitor
 import logging
+from openleadr.utils import generate_id
 
 from .logger import *
 
