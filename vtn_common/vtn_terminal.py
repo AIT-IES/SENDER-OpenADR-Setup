@@ -50,11 +50,11 @@ def ase(ven_id):
 def add_single_event(ven_id):
     _cmd(f'ase {ven_id}')
 
-def ape(period, ven_id):
+def ape(ven_id, period):
     add_periodic_event(period, ven_id)
 
-def add_periodic_event(period, ven_id):
-    _cmd(f'ppe {period} {ven_id}')
+def add_periodic_event(ven_id, period):
+    _cmd(f'ape {ven_id} {period}')
 
 def start_terminal(port=5001):
     global TERMINAL
