@@ -44,6 +44,18 @@ def cancel(task_id):
 def where(task_id):
     _cmd(f'where {task_id}')
 
+def lld():
+    log_level_debug()
+
+def log_level_debug():
+    _cmd('lld')
+
+def lli():
+    log_level_info()
+
+def log_level_info():
+    _cmd('lli')
+
 def ase(ven_id):
     add_single_event(ven_id)
 

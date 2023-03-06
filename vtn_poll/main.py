@@ -4,10 +4,6 @@ from datetime import timedelta
 from vtn_common import VTNPollServer, VTNMonitor
 from vtn_common.patch_report_request import patch_report_request
 
-# from openleadr import enable_default_logging
-# import logging
-# enable_default_logging(level=logging.DEBUG)
-
 VTN_ID = 'VTN_AIT'
 VTN_HOST = socket.gethostbyname(socket.gethostname())
 # VTN_HOST = 'localhost'

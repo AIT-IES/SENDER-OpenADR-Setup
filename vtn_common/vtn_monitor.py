@@ -2,7 +2,7 @@ import asyncio
 import aiomonitor
 import logging
 
-from openleadr.utils import generate_id
+from .logger import *
 
 class VTNMonitor(aiomonitor.Monitor):
 
@@ -42,6 +42,16 @@ class VTNMonitor(aiomonitor.Monitor):
             value = float(value)
         self._loop.create_task(self.server.add_new_event(ven_id=ven_id, value=value, 
                                                          period=None, event_task_id=None))
+
+    @aiomonitor.utils.alt_names('lld')
+    def do_logger_level_debug(self):
+        """Set logger level to DEBUG."""
+        LOGGER.setLevel(level=logging.DEBUG)
+
+    @aiomonitor.utils.alt_names('lli')
+    def do_logger_level_info(self):
+        """Set logger level to INFO."""
+        LOGGER.setLevel(level=logging.INFO)
 
     async def _heart_beat(self):
         while True:
