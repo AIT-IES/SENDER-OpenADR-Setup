@@ -21,6 +21,8 @@ class VTNPollServer(OpenADRServer):
     VEN_INFO_BACKUP_HOST = 'redis'
     VEN_INFO_BACKUP_PORT = 6379
 
+    MIN_REPORT_SAMPLING_TIME = timedelta(seconds=15)
+
     def __init__(self, vtn_id, ven_lookup=None, **args):
         super().__init__(vtn_id=vtn_id, ven_lookup=(ven_lookup or self.ven_lookup), **args)
 
@@ -54,11 +56,6 @@ class VTNPollServer(OpenADRServer):
         self.add_handler('on_register_report', self.on_register_report)
         # self.add_handler('on_register_report', self.on_register_report_full)
         self.add_handler('on_created_report', self.on_created_report)
-
-        # # Add external handler for polling ...
-        # self.add_handler('on_poll', self.on_poll)
-        # # ... but still use the internal polling method for events.
-        # self.services['event_service'].polling_method = 'internal'
 
         await super().run()
 
@@ -94,7 +91,7 @@ class VTNPollServer(OpenADRServer):
 
                         if not event_value:
                             LOGGER.info('NO FLEX FORECAST FOUND, USE RANDOM VALUE INSTEAD')
-                            event_value = round(random.uniform(0., 10.), 2)
+                            event_value = round(random.uniform(0., 2.), 2)
                     else:
                         event_value = value
                         LOGGER.info('USER-DEFINED FLEX FORECAST VALUE')
@@ -157,7 +154,14 @@ class VTNPollServer(OpenADRServer):
     async def on_register_report(self, ven_id, resource_id, measurement, unit, scale,
                                  min_sampling_interval, max_sampling_interval):
         callback = self._create_report_callback(ven_id=ven_id, resource_id=resource_id, measurement=measurement)
-        return callback, min_sampling_interval
+
+        sampling_interval = max(self.MIN_REPORT_SAMPLING_TIME, min_sampling_interval)
+        if sampling_interval > max_sampling_interval:
+            LOGGER.info(f'ATTENTION: VEN with ID = {ven_id} offered report with sampling interval ' +
+                        f'between {min_sampling_interval} and {max_sampling_interval}. Requested ' +
+                        f'sampling interval of {self.MIN_REPORT_SAMPLING_TIME} instead.')
+
+        return callback, sampling_interval
 
     async def on_created_report(self, payload):
         await self.on_created_report_base(payload)
