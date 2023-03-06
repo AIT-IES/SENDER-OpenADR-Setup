@@ -34,6 +34,9 @@ if __name__ == '__main__':
         # Start server.
         loop.run_until_complete(vtn_server.run())
 
+        # This function disables the VTN's default approach of requesting reports 
+        # from a VEN as soon as they are registered. Instead, report requests are 
+        # sent when the VEN calls the poll service.
         patch_report_request(vtn_server)
 
         # Enter the event loop.
