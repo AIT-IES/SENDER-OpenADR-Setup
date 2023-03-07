@@ -33,14 +33,15 @@ class PatchedReportService(ReportService):
             # The following paragraph has been added. It splits up entries with
             # mutiple report payloads into multiples entries with just a single
             # report interval each.
-            intervals = report['intervals']
-            for interval in intervals:
+            intervals = []
+            for interval in report['intervals']:
                 if list == type(interval['report_payload']):
                     for report_payload in interval['report_payload']:
                         interval_copy = interval.copy()
                         interval_copy['report_payload'] = report_payload
                         intervals.append(normalize_dict(interval_copy))
-                    intervals.remove(interval)
+                else:
+                    intervals.append(interval)
 
             for r_id, values in group_by(intervals, 'report_payload.r_id').items():
                 # Find the callback that was registered.
